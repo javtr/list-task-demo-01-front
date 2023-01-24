@@ -1,7 +1,12 @@
 import React from "react";
 import close from "../img/close.png";
+import { useDispatch, useStore } from "../store/StoreProvider";
+import { types } from "../store/StoreReducer";
 
 export default function Task({ task, closeTask, indexList }) {
+  const { user, products } = useStore();
+  const dispatch = useDispatch();
+
   return (
     <>
       <div
@@ -20,6 +25,14 @@ export default function Task({ task, closeTask, indexList }) {
 
         {task.id}
       </div>
+
+      <button onClick={() => dispatch({
+                type: types.loadData,
+                payload: []
+            })}>
+                Login
+      </button>
+
     </>
   );
 }

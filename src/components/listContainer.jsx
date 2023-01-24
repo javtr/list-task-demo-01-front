@@ -2,16 +2,19 @@ import React, { useEffect, useState } from "react";
 import {
   GetListByUser,
   PostNewList,
-  DeleteList,
   PostNewTask,
   DeleteTask,
 } from "../services/axios/axiosServices";
 import List from "./list";
 import Card from "react-bootstrap/Card";
-import { v4 as uuidv4 } from "uuid";
+
+import { useDispatch, useStore } from "../store/StoreProvider";
+import { types } from "../store/StoreReducer";
+
 
 export default function ListContainer() {
-  const [dataTask, setDataTask] = useState([]);
+  const { lists } = useStore();
+  const dispatch = useDispatch();
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -22,7 +25,11 @@ export default function ListContainer() {
   function getTasks() {
     GetListByUser()
       .then((response) => {
-        setDataTask(response.data);
+         dispatch({
+          type: types.loadData,
+          payload: response.data
+        })
+
         setIsLoading(false);
       })
       .catch((error) => {
@@ -43,17 +50,6 @@ export default function ListContainer() {
       .finally(() => {});
   }
 
-  //delete list
-  function deleteList(id) {
-    DeleteList(id)
-      .then((response) => {
-        console.log("list deleted");
-      })
-      .catch((error) => {
-        console.log(error);
-      })
-      .finally(() => {});
-  }
 
   //send new task
   function postTask(obj,index) {
@@ -71,7 +67,6 @@ export default function ListContainer() {
   function deleteTask(id) {
     DeleteTask(id)
       .then((response) => {
-        console.log("list deleted");
       })
       .catch((error) => {
         console.log(error);
@@ -96,7 +91,7 @@ export default function ListContainer() {
 
   function addTaskState(data,listIndex) {
 
-    const dataTaskTemp = [...dataTask];
+    const dataTaskTemp = [...lists];
 
     dataTaskTemp[listIndex].tasks.push({
       name: data.name,
@@ -104,21 +99,29 @@ export default function ListContainer() {
       listId: data.listEnt.id,
     });
 
-    setDataTask(dataTaskTemp);
+    dispatch({
+      type: types.loadData,
+      payload: dataTaskTemp
+    })
 
   }
 
   //delete task
   function closeTask(taskId, listIndex) {
+
     deleteTask(taskId);
 
-    const dataTaskTemp = [...dataTask];
+    const dataTaskTemp = [...lists];
 
     dataTaskTemp[listIndex].tasks = dataTaskTemp[
       listIndex
     ].tasks.filter((task) => task.id !== taskId);
 
-    setDataTask(dataTaskTemp);
+
+    dispatch({
+      type: types.loadData,
+      payload: dataTaskTemp
+    })   
   }
 
   //crud list-----------------------------------
@@ -132,26 +135,23 @@ export default function ListContainer() {
   }
 
   function addListState(data) {
-    const dataTaskTemp = [...dataTask];
+
+    const dataTaskTemp = [...lists];
     dataTaskTemp.push({
       id: data.id,
       name: data.name,
       tasks: [],
     });
 
-    setDataTask(dataTaskTemp);
+    dispatch({
+      type: types.loadData,
+      payload: dataTaskTemp
+    })
   }
 
-  //delete list
-  function closeList(index) {
-    deleteList(index);
-    let dataTaskTemp = dataTask.filter((list) => list.id !== index);
-    setDataTask(dataTaskTemp);
-  }
+
 
   //another functions ---------------------------------------
-
-  console.log("render...");
 
   if (isLoading) {
     return <h4>loading</h4>;
@@ -159,13 +159,12 @@ export default function ListContainer() {
 
   return (
     <div style={{ display: "flex", padding: 15 }}>
-      {dataTask.map((list, index) => (
+      {lists.map((list, index) => (
         <List
           key={index}
           list={list}
           addTask={addTask}
           indexList={index}
-          closeList={closeList}
           closeTask={closeTask}
         ></List>
       ))}

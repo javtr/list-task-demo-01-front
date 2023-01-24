@@ -2,14 +2,46 @@ import React from "react";
 import Card from "react-bootstrap/Card";
 import Task from "./task";
 import close from "../img/close.png";
+import {
+  DeleteList,
+} from "../services/axios/axiosServices";
+import { useDispatch, useStore } from "../store/StoreProvider";
+import { types } from "../store/StoreReducer";
 
 export default function List({
   list,
   addTask,
   indexList,
-  closeList,
   closeTask,
 }) {
+  const { lists } = useStore();
+  const dispatch = useDispatch();
+
+
+  //delete list
+  function deleteList(id) {
+    DeleteList(id)
+      .then((response) => {
+      })
+      .catch((error) => {
+        console.log(error);
+      })
+      .finally(() => {});
+  }
+
+
+  function closeList() {
+    deleteList(list.id);
+    let dataTaskTemp = lists.filter((listIt) => listIt.id !== list.id);
+
+    dispatch({
+      type: types.loadData,
+      payload: dataTaskTemp
+    })
+  }
+
+
+
   return (
     <Card
       style={{
@@ -21,7 +53,7 @@ export default function List({
       }}
     >
       <img
-        onClick={() => closeList(list.id)}
+        onClick={() => closeList()}
         src={close}
         style={{ width: 25 }}
         alt =""

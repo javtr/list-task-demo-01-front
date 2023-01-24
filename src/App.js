@@ -1,12 +1,14 @@
-import './App.css';
-import ListContainer from './components/listContainer';
-import 'bootstrap/dist/css/bootstrap.min.css';
+import "./App.css";
+import ListContainer from "./components/listContainer";
+import "bootstrap/dist/css/bootstrap.min.css";
+import StoreProvider from "./store/StoreProvider";
 
 function App() {
   return (
     <div className="">
-      <ListContainer>
-      </ListContainer>
+      <StoreProvider>
+        <ListContainer />
+      </StoreProvider>
     </div>
   );
 }
