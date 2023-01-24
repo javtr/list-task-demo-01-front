@@ -1,9 +1,15 @@
 import React from "react";
 import Card from "react-bootstrap/Card";
 import Task from "./task";
-import close from "../img/close.png"
+import close from "../img/close.png";
 
-export default function List({ list, addTask, index,closeList }) {
+export default function List({
+  list,
+  addTask,
+  indexList,
+  closeList,
+  closeTask,
+}) {
   return (
     <Card
       style={{
@@ -14,14 +20,24 @@ export default function List({ list, addTask, index,closeList }) {
         height: "100%",
       }}
     >
-    <img onClick={()=>closeList(list.id)} src={close} style={{width:25}}></img>
+      <img
+        onClick={() => closeList(list.id)}
+        src={close}
+        style={{ width: 25 }}
+        alt =""
+      ></img>
       <Card.Body>
-        {list.name}
+        {list.id}
         {list.tasks.map((task, index) => (
-          <Task key={index} task={task}></Task>
+          <Task
+            key={index}
+            task={task}
+            closeTask={closeTask}
+            indexList={indexList}
+          ></Task>
         ))}
         <div
-          onClick={() => addTask(index)}
+          onClick={() => addTask(list.id, indexList)}
           style={{
             backgroundColor: "rgb(100,200,100)",
             margin: 2,
